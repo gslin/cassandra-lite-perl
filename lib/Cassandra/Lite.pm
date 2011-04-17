@@ -112,6 +112,9 @@ sub _trigger_keyspace {
     $self->client->set_keyspace($keyspace);
 }
 
+=head2 FUNCTION get_slice
+=cut
+
 sub get_slice {
     my $self = shift;
 
@@ -136,6 +139,9 @@ sub get_slice {
 
     $self->client->get_slice($key, $columnParent, $predicate);
 }
+
+=head2 FUNCTION insert
+=cut
 
 sub insert {
     my $self = shift;
