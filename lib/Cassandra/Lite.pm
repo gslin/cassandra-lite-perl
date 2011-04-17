@@ -35,8 +35,14 @@ This module will offer a simple way to access Cassandra 0.7 (maybe later version
     my $res3 = $c->get_slice($columnFamily, $key, {range => [undef, 'sliceKeyFinish']});
     my $res4 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', 'sliceKeyFinish']});
 
+    # Get
+    my $v = $c->get($columnFamily, $key, 'title');
+
     # Change keyspace
     $c->keyspace('BlogArticleComment');
+
+    # Count
+    my $num = $c->count('Foo', 'key1');
 
     ...
 
