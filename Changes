@@ -1,2 +1,5 @@
+0.0.2   April 18, 2011
+        - Rename count() to get_count().
+
 0.0.1   April 18, 2011
         - Initial release.
