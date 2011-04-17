@@ -11,7 +11,7 @@ Cassandra::Lite - Simple way to access Cassandra 0.7
 
 This module will offer a simple way to access Cassandra 0.7 (maybe later version).
 
-You'll need to install Thrift and Cassandra perl modules first to use Cassandra::Lite.
+You'll need to install Thrift perl modules first to use Cassandra::Lite.
 
 =head1 SYNOPSIS
 
