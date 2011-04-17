@@ -227,6 +227,13 @@ sub remove {
     $self->client->remove($key, $columnPath, time);
 }
 
+=head1 SEEALSO
+
+=over
+=item L<http://wiki.apache.org/cassandra/API>
+=item L<http://wiki.apache.org/cassandra/ThriftInterface>
+=back
+
 =head1 AUTHOR
 
 Gea-Suan Lin, C<< <gslin at gslin.org> >>
