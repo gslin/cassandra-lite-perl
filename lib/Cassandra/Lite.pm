@@ -7,10 +7,6 @@ use warnings;
 
 Cassandra::Lite - Simple way to access Cassandra 0.7
 
-=head1 VERSION
-
-version 0.0.1
-
 =head1 DESCRIPTION
 
 This module will offer a simple way to access Cassandra 0.7 (maybe later version).
