@@ -73,6 +73,7 @@ sub _build_client {
     my $self = shift;
 
     my $client = Cassandra::CassandraClient->new($self->protocol);
+    $self->transport->open;
     $self->_login($client);
 
     $client;
