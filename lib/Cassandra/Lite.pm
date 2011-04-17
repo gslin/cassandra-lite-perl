@@ -46,8 +46,8 @@ You'll need to install Thrift and Cassandra perl modules first to use Cassandra:
     # Change keyspace
     $c->keyspace('BlogArticleComment');
 
-    # Count
-    my $num = $c->count('Foo', 'key1');
+    # Get count
+    my $num = $c->get_count('Foo', 'key1');
 
     ...
 
@@ -116,10 +116,25 @@ sub _trigger_keyspace {
     $self->client->set_keyspace($keyspace);
 }
 
-=head2 count
+=head2 get
 =cut
 
-sub count {
+sub get {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $key = shift;
+    my $column = shift;
+
+    my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily, column => $column});
+
+    $self->client->get($key, $columnPath);
+}
+
+=head2 get_count
+=cut
+
+sub get_count {
     my $self = shift;
 
     my $columnFamily = shift;
@@ -141,22 +156,7 @@ sub count {
     my $predicate = Cassandra::SlicePredicate->new;
     $predicate->{slice_range} = $sliceRange;
 
-    $self->client->count($key, $columnParent, $predicate);
-}
-
-=head2 get
-=cut
-
-sub get {
-    my $self = shift;
-
-    my $columnFamily = shift;
-    my $key = shift;
-    my $column = shift;
-
-    my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily, column => $column});
-
-    $self->client->get($key, $columnPath);
+    $self->client->get_count($key, $columnParent, $predicate);
 }
 
 =head2 get_slice
