@@ -11,6 +11,8 @@ Cassandra::Lite - Simple way to access Cassandra 0.7
 
 This module will offer a simple way to access Cassandra 0.7 (maybe later version).
 
+You'll need to install Thrift and Cassandra perl modules first to use Cassandra::Lite.
+
 =head1 SYNOPSIS
 
     use Cassandra::Lite;
@@ -37,6 +39,9 @@ This module will offer a simple way to access Cassandra 0.7 (maybe later version
 
     # Get
     my $v = $c->get($columnFamily, $key, 'title');
+
+    # Remove
+    $c->remove($columnFamily, $key);
 
     # Change keyspace
     $c->keyspace('BlogArticleComment');
@@ -205,6 +210,21 @@ sub insert {
     }
 
     $self->client->insert($key, $columnParent, $column);
+}
+
+=head2 FUNCTION remove
+=cut
+
+sub remove {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $key = shift;
+    my $column = shift;
+
+    my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily});
+
+    $self->client->remove($key, $columnPath, time);
 }
 
 =head1 AUTHOR
