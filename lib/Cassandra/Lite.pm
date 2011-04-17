@@ -19,7 +19,7 @@ You'll need to install Thrift and Cassandra perl modules first to use Cassandra:
 
     my $c = Cassandra::Lite->new(
                 server_name => 'server1',       # optional, default to '127.0.0.1'
-                server_port => '9160',          # optional, default to 9160
+                server_port => 9160,            # optional, default to 9160
                 username => 'username',         # optional, default to empty string ''
                 password => 'xxx',              # optional, default to empty string ''
                 keyspace => 'Keyspace1',
