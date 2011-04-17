@@ -116,7 +116,7 @@ sub _trigger_keyspace {
     $self->client->set_keyspace($keyspace);
 }
 
-=head2 FUNCTION count
+=head2 count
 =cut
 
 sub count {
@@ -144,7 +144,7 @@ sub count {
     $self->client->count($key, $columnParent, $predicate);
 }
 
-=head2 FUNCTION get
+=head2 get
 =cut
 
 sub get {
@@ -159,7 +159,7 @@ sub get {
     $self->client->get($key, $columnPath);
 }
 
-=head2 FUNCTION get_slice
+=head2 get_slice
 =cut
 
 sub get_slice {
@@ -187,7 +187,7 @@ sub get_slice {
     $self->client->get_slice($key, $columnParent, $predicate);
 }
 
-=head2 FUNCTION insert
+=head2 insert
 =cut
 
 sub insert {
@@ -212,7 +212,7 @@ sub insert {
     $self->client->insert($key, $columnParent, $column);
 }
 
-=head2 FUNCTION remove
+=head2 remove
 =cut
 
 sub remove {
