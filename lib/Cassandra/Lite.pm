@@ -71,7 +71,6 @@ has 'username' => (is => 'rw', isa => 'Str', default => '');
 
 use 5.010;
 use Cassandra::Cassandra;
-use Cassandra::Constants;
 use Cassandra::Types;
 use Thrift;
 use Thrift::BinaryProtocol;
