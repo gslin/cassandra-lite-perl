@@ -17,6 +17,7 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
 
     use Cassandra::Lite;
 
+    # All supported options:
     my $c = Cassandra::Lite->new(
                 server_name => 'server1',       # optional, default to '127.0.0.1'
                 server_port => 9160,            # optional, default to 9160
@@ -25,10 +26,14 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
                 keyspace => 'Keyspace1',
             );
 
+    # Usually we can use this in dev environment:
+    my $c = Cassandra::Lite->new(keyspace => 'Keyspace1');
+
+    # Now just define $columnFamily and $key
     my $columnFamily = 'BlogArticle';
     my $key = 'key12345';
 
-    # Insert
+    # Insert it
     $c->insert($columnFamily, $key, {title => 'testing title', body => '...'});
 
     # Get slice
@@ -37,10 +42,10 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $res3 = $c->get_slice($columnFamily, $key, {range => [undef, 'sliceKeyFinish']});
     my $res4 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', 'sliceKeyFinish']});
 
-    # Get
+    # Get a column
     my $v = $c->get($columnFamily, $key, 'title');
 
-    # Remove
+    # Remove it
     $c->remove($columnFamily, $key);
 
     # Change keyspace
