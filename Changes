@@ -1,5 +1,6 @@
 0.0.3   April 18, 2011
         - Support timestamp.
+        - Remove unnecessary file.
 
 0.0.2   April 18, 2011
         - Rename count() to get_count().
