@@ -33,8 +33,8 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $columnFamily = 'BlogArticle';
     my $key = 'key12345';
 
-    # Insert it
-    $c->insert($columnFamily, $key, {title => 'testing title', body => '...'});
+    # Insert it (timestamp is optional)
+    $c->insert($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time});
 
     # Get slice
     my $res1 = $c->get_slice($columnFamily, $key);
@@ -46,7 +46,7 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $v = $c->get($columnFamily, $key, 'title');
 
     # Remove it
-    $c->remove($columnFamily, $key);
+    $c->remove($columnFamily, $key, {timestamp => time});       # You can specify timestamp (optional)
 
     # Change keyspace
     $c->keyspace('BlogArticleComment');
@@ -200,18 +200,17 @@ sub insert {
 
     my $columnFamily = shift;
     my $key = shift;
-    my $opt = shift;
+    my $opt = shift // {};
 
     # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
-    my $now = time;
     my $column = Cassandra::Column->new;
 
     while (my ($k, $v) = each %$opt) {
         $column->{name} = $k;
         $column->{value} = $v;
-        $column->{timestamp} = $now;
+        $column->{timestamp} = $opt->{timestamp} // time;
     }
 
     $self->client->insert($key, $columnParent, $column);
@@ -226,10 +225,12 @@ sub remove {
     my $columnFamily = shift;
     my $key = shift;
     my $column = shift;
+    my $opt = shift // {};
 
     my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily});
+    my $timestamp = $opt->{timestamp} // time;
 
-    $self->client->remove($key, $columnPath, time);
+    $self->client->remove($key, $columnPath, $timestamp);
 }
 
 =head1 SEEALSO
