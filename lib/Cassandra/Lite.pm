@@ -272,9 +272,16 @@ sub remove {
 
 =head1 SEEALSO
 
-=over
-=item L<http://wiki.apache.org/cassandra/API>
-=item L<http://wiki.apache.org/cassandra/ThriftInterface>
+=over 4
+
+=item Cassandra API
+
+L<http://wiki.apache.org/cassandra/API>
+
+=item Cassandra Thrift Interface
+
+L<http://wiki.apache.org/cassandra/ThriftInterface>
+
 =back
 
 =head1 AUTHOR
