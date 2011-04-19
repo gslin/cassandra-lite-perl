@@ -85,6 +85,9 @@ use Thrift::BinaryProtocol;
 use Thrift::FramedTransport;
 use Thrift::Socket;
 
+=head1 FUNCTION
+=cut
+
 sub _build_client {
     my $self = shift;
 
