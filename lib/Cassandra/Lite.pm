@@ -40,7 +40,7 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
 
     # Get slice
     my $res1 = $c->get_slice($columnFamily, $key);
-    my $res2 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', undef});
+    my $res2 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', undef]});
     my $res3 = $c->get_slice($columnFamily, $key, {range => [undef, 'sliceKeyFinish']});
     my $res4 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', 'sliceKeyFinish']});
 
