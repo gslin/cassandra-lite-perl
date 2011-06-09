@@ -181,7 +181,7 @@ sub get_count {
     # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
-    my $sliceRange = Cassandra::SliceRange->new;
+    my $sliceRange = Cassandra::SliceRange->new($opt);
     if (defined $opt->{range}) {
         $sliceRange->{start} = $opt->{range}->[0] // '';
         $sliceRange->{finish} = $opt->{range}->[1] // '';
@@ -211,7 +211,7 @@ sub get_slice {
     # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
-    my $sliceRange = Cassandra::SliceRange->new;
+    my $sliceRange = Cassandra::SliceRange->new($opt);
     if (defined $opt->{range}) {
         $sliceRange->{start} = $opt->{range}->[0] // '';
         $sliceRange->{finish} = $opt->{range}->[1] // '';
