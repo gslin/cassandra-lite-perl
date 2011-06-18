@@ -241,17 +241,15 @@ sub insert {
     # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
+    my $level = $self->_consistency_level_write($opt);
     my $column = Cassandra::Column->new;
 
     while (my ($k, $v) = each %$opt) {
         $column->{name} = $k;
         $column->{value} = $v;
         $column->{timestamp} = $opt->{timestamp} // time;
+        $self->client->insert($key, $columnParent, $column, $level);
     }
-
-    my $level = $self->_consistency_level_write($opt);
-
-    $self->client->insert($key, $columnParent, $column, $level);
 }
 
 =head2 remove
