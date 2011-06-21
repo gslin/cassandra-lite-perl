@@ -1,8 +1,5 @@
 # ABSTRACT: Simple way to access Cassandra 0.7
 package Cassandra::Lite;
-BEGIN {
-  $Cassandra::Lite::VERSION = '0.0.4';
-}
 use strict;
 use warnings;
 
