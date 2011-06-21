@@ -519,6 +519,67 @@ sub batch_insert_cf {
   $self->client->batch_mutate($mutation_map, $level);
 }
 
+=head2 batch_remove
+
+
+ A Deletion encapsulates an operation that will delete all columns matching the
+ specified timestamp and predicate. If super_column is specified, the Deletion
+ will operate on columns within the SuperColumn - otherwise it will operate on
+ columns in the top-level of the key.
+
+ Attribute             Type  Req. Description
+ timestamp              i64    Y  The timestamp of the column(s) to be deleted.
+ super_column        binary    N  The super column to delete the column(s) from.
+ predicate   SlicePredicate    N  A predicate to match the column(s) to be
+                                  deleted from the key/super column.
+
+ $client->batch_remove($super_column , { range => ['key1','key4'], count => 10, reversed => 0 }, $timestamp,{consistency_level => 'QUORUM'});
+ $client->batch_remove(undef , { columns => ['key1','key2','key3','key4'] }, $timestamp);
+
+=cut
+
+sub batch_remove {
+    my $self = shift;
+
+    my $super_column = shift;
+    my $opt = shift // {};
+    my $timestamp = shift // time();
+    my $cl = shift // {};
+
+    my $columns;
+    my $mutation_map;
+
+    my $deletion = Cassandra::Deletion->new({timestamp => $timestamp});
+
+    if (defined $super_column) {
+			$deletion->{super_column} = $super_column;
+	}
+
+    if (scalar keys %{$opt} )  {
+        if (exists $opt->{columns} )  {
+            $predicate_args->{column_names} = $opt->{columns};
+        } else {
+            my $sliceRange = Cassandra::SliceRange->new($opt);
+            if (defined $opt->{range}) {
+                $sliceRange->{start} = $opt->{range}->[0] // '';
+                $sliceRange->{finish} = $opt->{range}->[1] // '';
+            } else {
+                $sliceRange->{start} = '';
+                $sliceRange->{finish} = '';
+            }
+            $predicate_args->{slice_range} = $sliceRange;
+        }
+        my $predicate = Cassandra::SlicePredicate->new($predicate_args);
+        $deletion->{predicate} = $predicate;
+    }
+
+	my $mutation = new Cassandra::Mutation({ deletion => $deletion });
+
+    my $level = $self->_consistency_level_write($cl);
+
+    $self->client->batch_mutate($mutation_map, $level);
+}
+
 =head2 truncate
 =cut
 
@@ -607,8 +668,11 @@ sub describe_version {
 =head1 SEEALSO
 
 =over
+
 =item L<http://wiki.apache.org/cassandra/API>
+
 =item L<http://wiki.apache.org/cassandra/ThriftInterface>
+
 =back
 
 =head1 AUTHOR
