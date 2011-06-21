@@ -445,10 +445,10 @@ sub remove {
     $self->client->remove($key, $columnPath, $timestamp, $level);
 }
 
-=head2 batch_insert
+=head2 batch_insert_scf
 =cut
 
-sub batch_insert {
+sub batch_insert_scf {
     my $self = shift;
 
 #$client->batch_insert({Key1 => [
@@ -488,10 +488,10 @@ sub batch_insert {
     $self->client->batch_mutate($mutation_map, $level);
 }
 
-=head2 batch_insert_hash
+=head2 batch_insert_cf
 =cut
 
-sub batch_insert_hash {
+sub batch_insert_cf {
   my $self = shift;
   my $data = shift;
   my $opt = shift // {};
