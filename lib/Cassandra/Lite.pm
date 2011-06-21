@@ -488,6 +488,40 @@ sub batch_insert {
     $self->client->batch_mutate($mutation_map, $level);
 }
 
+=head2 batch_insert_hash
+=cut
+
+sub batch_insert_hash {
+  my $self = shift;
+  my $data = shift;
+  my $opt = shift // {};
+
+  my $mutation_map = {};
+
+  my $timestamp = $opt->{timestamp} // time;
+  my $level = $self->_consistency_level_write($opt);
+
+  for my $key (keys %$data) {
+    for my $cf (keys %{$data->{$key}}) {
+      my @mutations;
+      my $hash = $data->{$key}->{$cf};
+      for my $name (keys %$hash) {
+        my $column = Cassandra::Column->new({
+          name => $name,
+          value => $hash->{$name} // '',
+          timestamp => $timestamp,
+        });
+        my $c_or_sc = Cassandra::ColumnOrSuperColumn->new({ column => $column });
+        my $mutation = Cassandra::Mutation->new({ column_or_supercolumn => $c_or_sc });
+        push(@mutations, $mutation);
+      }
+      $mutation_map->{$key}->{$cf} = \@mutations;
+    }
+  }
+
+  $self->client->batch_mutate($mutation_map, $level);
+}
+
 =head2 truncate
 =cut
 
