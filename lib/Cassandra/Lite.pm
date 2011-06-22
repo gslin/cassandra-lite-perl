@@ -64,6 +64,26 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $num1 = $c->get_count('Foo', 'key1');
     my $num2 = $c->get_count('Foo', 'key2', {consistency_level => 'ALL'});
 
+
+    # Show Version
+    printf "VERSION : %s\n",$c->describe_version();
+
+    #describe ring
+    my $res1 = $c->describe_ring('KeySpace21');
+
+    if (ref($res1) eq 'ARRAY') {
+        foreach $col (@$res1) {
+            if (ref($col) eq 'Cassandra::TokenRange') {
+                printf ("%10s start: %25s end: %25s endpoints: %s\n",
+                        ++$count, 
+                        $col->start_token,
+                        $col->end_token,
+                        join(",",@{$col->endpoints})
+                      );
+            }
+        }
+    }
+
     ...
 
 =cut
@@ -289,6 +309,26 @@ sub multiget_slice {
 }
 
 =head2 get_range_slices
+
+	Returns a list of slices for the keys within the specified KeyRange. Unlike get_key_range, this applies the given predicate to all keys in the range, not just those with undeleted matching data. Note that when using RandomPartitioner, keys are stored in the order of their MD5 hash, making it impossible to get a meaningful range of keys between two endpoints.
+
+
+	if (defined $key) {
+			$range->{count} = 15;		# number of keys. Default 100;
+			$range->{start_key} = $key; # start key value to match
+			$range->{end_key} = '';		# end key value to match
+	}
+    $options = {
+		count => 5,
+		consistency_level => 'QUORUM'
+	};
+
+	my $res1 = $c->get_range_slices(
+		$columnFamily,  # column parent
+		$range,			# Range. May be null
+		$options );		# options ( consistency_level, columns count, columns filter,etc
+
+
 =cut
 
 sub get_range_slices {
@@ -327,29 +367,62 @@ sub get_range_slices {
 
 
 =head2 get_indexed_slices
+
+
+	Like get_range_slices, returns a list of slices, but uses IndexClause instead of KeyRange. To use this method, the underlying ColumnFamily of the ColumnParent must have been configured with a column_metadata attribute, specifying at least the name and index_type attributes. See CfDef and ColumnDef above for the list of attributes.
+	Since the IndexClause must contain one IndexExpression with an EQ operator on a configured index column, there is no need to specify it. Other IndexExpression structs may be added to the IndexClause for non-indexed columns to further refine the results of the EQ expression.
+
+	# cassandra-cli -h localhost -k Keyspace
+
+	[default@Keyspace] create column family User with column_metadata =  [
+		{
+			column_name: firstname,
+			validation_class: UTF8Type
+		},
+		{
+			column_name: lastname,
+			validation_class: UTF8Type
+		},
+		{
+			column_name: age,
+			validation_class: UTF8Type,
+			index_type: KEYS
+		}
+	];
+
+    [default@Keyspace] set User['zaphod']['firstname'] = 'Zaphod';
+	[default@Keyspace] set User['zaphod']['lastname'] = 'Beeblebrox';
+    [default@Keyspace] set User['zaphod']['age'] = '42';
+
+    [default@Keyspace] set User['zeca']['firstname'] = 'Jose';
+	[default@Keyspace] set User['zeca']['lastname'] = 'Ferreira';
+    [default@Keyspace] set User['zeca']['age'] = '42';
+
+     my $res1 = $c->get_indexed_slices('User',
+                                    {
+                                      start_key => $key, 
+                                      count     => 5,
+                                      indexes   => [ ['age' => '42']]
+                                    },
+                                    {
+                                      count     => 1, 
+                                      consistency_level => 'QUORUM'
+                                    });
+
+     my $res1 = $c->get_indexed_slices('User',
+                                    {
+                                      start_key => $key, 
+                                      count     => 5,
+                                      indexes   => [ ['age' => '42'],['lastname' => 'Ferreira']]
+                                    },
+                                    {
+                                      count     => 1, 
+                                      consistency_level => 'QUORUM'
+                                    });
+
+
+
 =cut
-
-#[default@SpikeBL] create column family User with  column_metadata =  [
-#...	{column_name: first, validation_class: UTF8Type},
-#...	{column_name: last, validation_class: UTF8Type},
-#...	{column_name: age, validation_class: UTF8Type, index_type: KEYS}];
-#41ed0dfa-96b0-11e0-b73c-f494d99d95ad
-#Waiting for schema agreement...
-#... schemas agree across the cluster
-#[default@SpikeBL] set User['zaphod']['first'] = 'Zaphod';
-#Value inserted.
-#[default@SpikeBL] set User['zaphod']['last'] = 'Beeblebrox';
-#Value inserted.
-#[default@SpikeBL] set User['zaphod']['age'] = '42';
-# my $res1 = $c->get_indexed_slices($columnFamily,
-#                                    { start_key => $key, 
-#                                      count     => 5,
-#                                      indexes   => [ ['age' => '42'],['second_index' => 'xxx'] ]
-#                                    },
-#                                    { count     => 1, 
-#                                      consistency_level => 'QUORUM'
-#                                    });
-
 
 sub get_indexed_slices {
     my $self = shift;
@@ -547,6 +620,7 @@ sub batch_remove {
     my $cl = shift // {};
 
     my $columns;
+    my $predicate_args;
     my $mutation_map;
 
     my $deletion = Cassandra::Deletion->new({timestamp => $timestamp});
