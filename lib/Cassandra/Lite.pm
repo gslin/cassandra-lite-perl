@@ -1,15 +1,15 @@
-# ABSTRACT: Simple way to access Cassandra 0.7
+# ABSTRACT: Simple way to access Cassandra 0.7/0.8
 package Cassandra::Lite;
 use strict;
 use warnings;
 
 =head1 NAME
 
-Cassandra::Lite - Simple way to access Cassandra 0.7
+Cassandra::Lite - Simple way to access Cassandra 0.7/0.8
 
 =head1 DESCRIPTION
 
-This module will offer you a simple way to access Cassandra 0.7 (maybe later version).  Some parts are not same as standard API document (especially arguments order), it's because I want to keep this module easy to use.
+This module will offer you a simple way to access Cassandra 0.7/0.8 (maybe later version).  Some parts are not same as standard API document (especially arguments order), it's because I want to keep this module easy to use.
 
 You'll need to install Thrift perl modules first to use Cassandra::Lite.
 
