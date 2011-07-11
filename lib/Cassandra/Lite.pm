@@ -7,6 +7,10 @@ use warnings;
 
 Cassandra::Lite - Simple way to access Cassandra 0.7
 
+=head1 VERSION
+
+version 0.0.4
+
 =head1 DESCRIPTION
 
 This module will offer you a simple way to access Cassandra 0.7 (maybe later version).  Some parts are not same as standard API document (especially arguments order), it's because I want to keep this module easy to use.
@@ -60,6 +64,26 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $num1 = $c->get_count('Foo', 'key1');
     my $num2 = $c->get_count('Foo', 'key2', {consistency_level => 'ALL'});
 
+
+    # Show Version
+    printf "VERSION : %s\n",$c->describe_version();
+
+    #describe ring
+    my $res1 = $c->describe_ring('KeySpace21');
+
+    if (ref($res1) eq 'ARRAY') {
+        foreach $col (@$res1) {
+            if (ref($col) eq 'Cassandra::TokenRange') {
+                printf ("%10s start: %25s end: %25s endpoints: %s\n",
+                        ++$count, 
+                        $col->start_token,
+                        $col->end_token,
+                        join(",",@{$col->endpoints})
+                      );
+            }
+        }
+    }
+
     ...
 
 =cut
@@ -84,9 +108,6 @@ use Thrift;
 use Thrift::BinaryProtocol;
 use Thrift::FramedTransport;
 use Thrift::Socket;
-
-=head1 FUNCTION
-=cut
 
 sub _build_client {
     my $self = shift;
@@ -200,7 +221,6 @@ sub get_count {
 
 =head2 get_slice
 =cut
-
 sub get_slice {
     my $self = shift;
 
@@ -228,6 +248,230 @@ sub get_slice {
     $self->client->get_slice($key, $columnParent, $predicate, $level);
 }
 
+=head2 multiget_count
+=cut
+
+sub multiget_count {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $keys = shift;
+    my $opt = shift;
+
+    # TODO: cache this
+    my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
+
+    my $sliceRange = Cassandra::SliceRange->new($opt);
+    if (defined $opt->{range}) {
+        $sliceRange->{start} = $opt->{range}->[0] // '';
+        $sliceRange->{finish} = $opt->{range}->[1] // '';
+    } else {
+        $sliceRange->{start} = '';
+        $sliceRange->{finish} = '';
+    }
+
+    my $predicate = Cassandra::SlicePredicate->new;
+    $predicate->{slice_range} = $sliceRange;
+
+    my $level = $self->_consistency_level_read($opt);
+
+    $self->client->multiget_count($keys, $columnParent, $predicate, $level);
+}
+
+=head2 multiget_slice
+=cut
+
+sub multiget_slice {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $keys = shift;
+    my $opt = shift;
+
+    # TODO: cache this
+    my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
+
+    my $sliceRange = Cassandra::SliceRange->new($opt);
+    if (defined $opt->{range}) {
+        $sliceRange->{start} = $opt->{range}->[0] // '';
+        $sliceRange->{finish} = $opt->{range}->[1] // '';
+    } else {
+        $sliceRange->{start} = '';
+        $sliceRange->{finish} = '';
+    }
+
+    my $predicate = Cassandra::SlicePredicate->new;
+    $predicate->{slice_range} = $sliceRange;
+
+    my $level = $self->_consistency_level_read($opt);
+
+    $self->client->multiget_slice($keys,$columnParent, $predicate, $level);
+}
+
+=head2 get_range_slices
+
+	Returns a list of slices for the keys within the specified KeyRange. Unlike get_key_range, this applies the given predicate to all keys in the range, not just those with undeleted matching data. Note that when using RandomPartitioner, keys are stored in the order of their MD5 hash, making it impossible to get a meaningful range of keys between two endpoints.
+
+
+	if (defined $key) {
+			$range->{count} = 15;		# number of keys. Default 100;
+			$range->{start_key} = $key; # start key value to match
+			$range->{end_key} = '';		# end key value to match
+	}
+    $options = {
+		count => 5,
+		consistency_level => 'QUORUM'
+	};
+
+	my $res1 = $c->get_range_slices(
+		$columnFamily,  # column parent
+		$range,			# Range. May be null
+		$options );		# options ( consistency_level, columns count, columns filter,etc
+
+
+=cut
+
+sub get_range_slices {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $range = shift;
+    my $opt = shift;
+
+    my $predicate_args;
+    # TODO: cache this
+    my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
+
+    my $keyRange = Cassandra::KeyRange->new($range);
+
+    if (exists $opt->{columns} )  {
+        $predicate_args->{column_names} = $opt->{columns};
+    } else {
+        my $sliceRange = Cassandra::SliceRange->new($opt);
+        if (defined $opt->{range}) {
+            $sliceRange->{start} = $opt->{range}->[0] // '';
+            $sliceRange->{finish} = $opt->{range}->[1] // '';
+        } else {
+            $sliceRange->{start} = '';
+            $sliceRange->{finish} = '';
+        }
+        $predicate_args->{slice_range} = $sliceRange;
+    }
+
+    my $predicate = Cassandra::SlicePredicate->new($predicate_args);
+    my $level = $self->_consistency_level_read($opt);
+
+    $self->client->get_range_slices($columnParent, $predicate, $keyRange, $level);
+}
+
+
+
+=head2 get_indexed_slices
+
+
+	Like get_range_slices, returns a list of slices, but uses IndexClause instead of KeyRange. To use this method, the underlying ColumnFamily of the ColumnParent must have been configured with a column_metadata attribute, specifying at least the name and index_type attributes. See CfDef and ColumnDef above for the list of attributes.
+	Since the IndexClause must contain one IndexExpression with an EQ operator on a configured index column, there is no need to specify it. Other IndexExpression structs may be added to the IndexClause for non-indexed columns to further refine the results of the EQ expression.
+
+	# cassandra-cli -h localhost -k Keyspace
+
+	[default@Keyspace] create column family User with column_metadata =  [
+		{
+			column_name: firstname,
+			validation_class: UTF8Type
+		},
+		{
+			column_name: lastname,
+			validation_class: UTF8Type
+		},
+		{
+			column_name: age,
+			validation_class: UTF8Type,
+			index_type: KEYS
+		}
+	];
+
+    [default@Keyspace] set User['zaphod']['firstname'] = 'Zaphod';
+	[default@Keyspace] set User['zaphod']['lastname'] = 'Beeblebrox';
+    [default@Keyspace] set User['zaphod']['age'] = '42';
+
+    [default@Keyspace] set User['zeca']['firstname'] = 'Jose';
+	[default@Keyspace] set User['zeca']['lastname'] = 'Ferreira';
+    [default@Keyspace] set User['zeca']['age'] = '42';
+
+     my $res1 = $c->get_indexed_slices('User',
+                                    {
+                                      start_key => $key, 
+                                      count     => 5,
+                                      indexes   => [ ['age' => '42']]
+                                    },
+                                    {
+                                      count     => 1, 
+                                      consistency_level => 'QUORUM'
+                                    });
+
+     my $res1 = $c->get_indexed_slices('User',
+                                    {
+                                      start_key => $key, 
+                                      count     => 5,
+                                      indexes   => [ ['age' => '42'],['lastname' => 'Ferreira']]
+                                    },
+                                    {
+                                      count     => 1, 
+                                      consistency_level => 'QUORUM'
+                                    });
+
+
+
+=cut
+
+sub get_indexed_slices {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $indexes = shift;
+    my $opt = shift;
+
+    my $expr_list;
+    my $predicate_args;
+    # TODO: cache this
+    my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
+
+    # indexes must have column_name op value 
+    $indexes->{op} = Cassandra::IndexOperator::EQ; # only EQ is supported
+
+    foreach (@{$indexes->{'indexes'}} ) {
+	my $index_expr = Cassandra::IndexExpression->new({ column_name =>  $_->[0], op => Cassandra::IndexOperator::EQ, value => $_->[1]});
+	push (@{ $expr_list->{expressions} },$index_expr);
+    }
+
+    foreach (qw/count start_key/) {
+         $expr_list->{$_} = $indexes->{$_} if defined $indexes->{$_};
+    }
+
+    # ( expressions start_key count ) 
+    my $index_clause = Cassandra::IndexClause->new( $expr_list );
+
+    if (exists $opt->{columns} )  {
+        $predicate_args->{column_names} = $opt->{columns};
+    } else {
+        my $sliceRange = Cassandra::SliceRange->new($opt);
+        if (defined $opt->{range}) {
+            $sliceRange->{start} = $opt->{range}->[0] // '';
+            $sliceRange->{finish} = $opt->{range}->[1] // '';
+        } else {
+            $sliceRange->{start} = '';
+            $sliceRange->{finish} = '';
+        }
+        $predicate_args->{slice_range} = $sliceRange;
+    }
+
+    my $predicate = Cassandra::SlicePredicate->new($predicate_args);
+    my $level = $self->_consistency_level_read($opt);
+
+    $self->client->get_indexed_slices($columnParent, $index_clause, $predicate, $level);
+}
+
+
 =head2 insert
 =cut
 
@@ -241,17 +485,15 @@ sub insert {
     # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
+    my $level = $self->_consistency_level_write($opt);
     my $column = Cassandra::Column->new;
 
     while (my ($k, $v) = each %$opt) {
         $column->{name} = $k;
         $column->{value} = $v;
         $column->{timestamp} = $opt->{timestamp} // time;
+        $self->client->insert($key, $columnParent, $column, $level);
     }
-
-    my $level = $self->_consistency_level_write($opt);
-
-    $self->client->insert($key, $columnParent, $column, $level);
 }
 
 =head2 remove
@@ -273,17 +515,237 @@ sub remove {
     $self->client->remove($key, $columnPath, $timestamp, $level);
 }
 
+=head2 batch_insert_scf
+=cut
+
+sub batch_insert_scf {
+    my $self = shift;
+
+#$client->batch_insert({Key1 => [
+#			cf1 => [ foo => bar, bar => foo],
+#}]);
+    my $data = shift;
+    my $opt = shift // {};
+
+    my $columns;
+    my $mutation_map;
+
+    # TODO: cache this
+    #my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
+
+   
+    foreach my $key (keys %{$data}) {
+        $columns = undef;
+        foreach my $cf (keys %{$data->{$key}}) {
+		foreach my $col (@{$data->{$key}->{$cf}}) {
+			my $column = Cassandra::Column->new({
+					name => $col->[0], 
+					value => $col->[1], 
+					timestamp => ( $col->[2] // time )
+					});
+			push (@{$columns},$column);
+		}
+		my $super_column = new Cassandra::SuperColumn({ name => 'SuperColumnName', columns => $columns });
+		my $sc = Cassandra::ColumnOrSuperColumn->new({ super_column => $super_column});
+		my $mutation = new Cassandra::Mutation({ column_or_supercolumn => $sc });
+		push(@{$mutation_map->{$key}->{$cf}},$mutation );
+        }
+    }
+
+
+    my $level = $self->_consistency_level_write($opt);
+
+    $self->client->batch_mutate($mutation_map, $level);
+}
+
+=head2 batch_insert_cf
+=cut
+
+sub batch_insert_cf {
+  my $self = shift;
+  my $data = shift;
+  my $opt = shift // {};
+
+  my $mutation_map = {};
+
+  my $timestamp = $opt->{timestamp} // time;
+  my $level = $self->_consistency_level_write($opt);
+
+  for my $key (keys %$data) {
+    for my $cf (keys %{$data->{$key}}) {
+      my @mutations;
+      my $hash = $data->{$key}->{$cf};
+      for my $name (keys %$hash) {
+        my $column = Cassandra::Column->new({
+          name => $name,
+          value => $hash->{$name} // '',
+          timestamp => $timestamp,
+        });
+        my $c_or_sc = Cassandra::ColumnOrSuperColumn->new({ column => $column });
+        my $mutation = Cassandra::Mutation->new({ column_or_supercolumn => $c_or_sc });
+        push(@mutations, $mutation);
+      }
+      $mutation_map->{$key}->{$cf} = \@mutations;
+    }
+  }
+
+  $self->client->batch_mutate($mutation_map, $level);
+}
+
+=head2 batch_remove
+
+
+ A Deletion encapsulates an operation that will delete all columns matching the
+ specified timestamp and predicate. If super_column is specified, the Deletion
+ will operate on columns within the SuperColumn - otherwise it will operate on
+ columns in the top-level of the key.
+
+ Attribute             Type  Req. Description
+ timestamp              i64    Y  The timestamp of the column(s) to be deleted.
+ super_column        binary    N  The super column to delete the column(s) from.
+ predicate   SlicePredicate    N  A predicate to match the column(s) to be
+                                  deleted from the key/super column.
+
+ $client->batch_remove($super_column , { range => ['key1','key4'], count => 10, reversed => 0 }, $timestamp,{consistency_level => 'QUORUM'});
+ $client->batch_remove(undef , { columns => ['key1','key2','key3','key4'] }, $timestamp);
+
+=cut
+
+sub batch_remove {
+    my $self = shift;
+
+    my $super_column = shift;
+    my $opt = shift // {};
+    my $timestamp = shift // time();
+    my $cl = shift // {};
+
+    my $columns;
+    my $predicate_args;
+    my $mutation_map;
+
+    my $deletion = Cassandra::Deletion->new({timestamp => $timestamp});
+
+    if (defined $super_column) {
+			$deletion->{super_column} = $super_column;
+	}
+
+    if (scalar keys %{$opt} )  {
+        if (exists $opt->{columns} )  {
+            $predicate_args->{column_names} = $opt->{columns};
+        } else {
+            my $sliceRange = Cassandra::SliceRange->new($opt);
+            if (defined $opt->{range}) {
+                $sliceRange->{start} = $opt->{range}->[0] // '';
+                $sliceRange->{finish} = $opt->{range}->[1] // '';
+            } else {
+                $sliceRange->{start} = '';
+                $sliceRange->{finish} = '';
+            }
+            $predicate_args->{slice_range} = $sliceRange;
+        }
+        my $predicate = Cassandra::SlicePredicate->new($predicate_args);
+        $deletion->{predicate} = $predicate;
+    }
+
+	my $mutation = new Cassandra::Mutation({ deletion => $deletion });
+
+    my $level = $self->_consistency_level_write($cl);
+
+    $self->client->batch_mutate($mutation_map, $level);
+}
+
+=head2 truncate
+=cut
+
+sub truncate {
+    my $self = shift;
+
+    my $columnFamily = shift;
+
+    $self->client->truncate($columnFamily);
+}
+
+=head2 describe_keyspace
+=cut
+
+sub describe_keyspace {
+    my $self = shift;
+
+    my $keyspace = shift;
+
+    $self->client->describe_keyspace($keyspace);
+}
+
+
+=head2 describe_keyspaces
+=cut
+
+sub describe_keyspaces {
+    my $self = shift;
+
+    $self->client->describe_keyspaces();
+}
+
+
+=head2 describe_cluster_name
+=cut
+
+sub describe_cluster_name {
+    my $self = shift;
+
+    $self->client->describe_cluster_name();
+}
+
+
+=head2 describe_partitioner
+=cut
+
+sub describe_partitioner {
+    my $self = shift;
+
+    $self->client->describe_partitioner();
+}
+
+
+=head2 describe_ring
+=cut
+
+sub describe_ring {
+    my $self = shift;
+
+    my $keyspace = shift;
+
+    $self->client->describe_ring($keyspace);
+}
+
+
+=head2 describe_snitch
+=cut
+
+sub describe_snitch {
+    my $self = shift;
+
+    $self->client->describe_snitch();
+}
+
+
+=head2 describe_version
+=cut
+
+sub describe_version {
+    my $self = shift;
+
+    $self->client->describe_version();
+}
+
+
 =head1 SEEALSO
 
-=over 4
+=over
 
-=item Cassandra API
+=item L<http://wiki.apache.org/cassandra/API>
 
-L<http://wiki.apache.org/cassandra/API>
-
-=item Cassandra Thrift Interface
-
-L<http://wiki.apache.org/cassandra/ThriftInterface>
+=item L<http://wiki.apache.org/cassandra/ThriftInterface>
 
 =back
 
