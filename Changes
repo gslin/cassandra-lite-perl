@@ -2,7 +2,7 @@
         - Support for count and reverse in get_slice and get_count
           functions. (thanks for jcbf, issue #4)
         - Fix typo in sample.
-        - Upgrade to 0.8.1
+        - Upgrade to 0.8.1.
 
 0.0.4   April 18, 2011
         - Support consistency level.
