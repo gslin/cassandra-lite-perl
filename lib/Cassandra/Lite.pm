@@ -35,8 +35,9 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $columnFamily = 'BlogArticle';
     my $key = 'key12345';
 
-    # Insert it (timestamp is optional)
-    $c->insert($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time});
+    # Insert ("insert" is an alias of "put") it. (timestamp is optional)
+    $c->put($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time}); # OR
+    $c->insert($columnFamily, $key, {title => 'testing title', body => '...'});
 
     # Get slice
     my $res1 = $c->get_slice($columnFamily, $key);
@@ -232,6 +233,14 @@ sub get_slice {
 =cut
 
 sub insert {
+    my $self = shift;
+    $self->put(@_);
+}
+
+=head2 put
+=cut
+
+sub put {
     my $self = shift;
 
     my $columnFamily = shift;
