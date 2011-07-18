@@ -266,6 +266,7 @@ sub put {
 
     my $columnFamily = shift;
     my $key = shift;
+    my $columns = shift;
     my $opt = shift // {};
 
     my $level = $self->_consistency_level_write($opt);
@@ -275,13 +276,13 @@ sub put {
 
     my $column = Cassandra::Column->new;
 
-    while (my ($k, $v) = each %$opt) {
+    while (my ($k, $v) = each %$columns) {
         $column->{name} = $k;
         $column->{value} = $v;
         $column->{timestamp} = $opt->{timestamp} // time;
-    }
 
-    $self->client->insert($key, $columnParent, $column, $level);
+        $self->client->insert($key, $columnParent, $column, $level);
+    }
 }
 
 =head2 remove
