@@ -1,5 +1,6 @@
 0.0.6   June 18, 2011
-        - Rename "insert" to "put".
+        - Rename "insert" to "put" and setup alias to keep compatibility.
+        - Rename "remove" to "delete" and setup alias to keep compatibility.
 
 0.0.5   June 17, 2011
         - Support for count and reverse in get_slice and get_count

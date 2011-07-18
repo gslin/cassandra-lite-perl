@@ -52,8 +52,9 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
     my $v2 = $c->get($columnFamily, $key, 'title', {consistency_level => 'QUORUM'}); # OR
     my $v2 = $c->get($columnFamily, $key, 'title', {consistency_level => 'ALL'});
 
-    # Remove it
-    $c->remove($columnFamily, $key, {timestamp => time}); # You can specify timestamp (optional) and consistency_level (optional)
+    # Remove it ("remove" is an alias of "delete")
+    $c->delete($columnFamily, $key, {timestamp => time}); # You can specify timestamp (optional) and consistency_level (optional)
+    $c->remove($columnFamily, $key);
 
     # Change keyspace
     $c->keyspace('BlogArticleComment');
@@ -151,6 +152,25 @@ sub _trigger_keyspace {
     my ($self, $keyspace) = @_;
 
     $self->client->set_keyspace($keyspace);
+}
+
+=head2 delete
+=cut
+
+sub delete {
+    my $self = shift;
+
+    my $columnFamily = shift;
+    my $key = shift;
+    my $column = shift;
+    my $opt = shift // {};
+
+    my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily});
+    my $timestamp = $opt->{timestamp} // time;
+
+    my $level = $self->_consistency_level_write($opt);
+
+    $self->client->remove($key, $columnPath, $timestamp, $level);
 }
 
 =head2 get
@@ -269,18 +289,7 @@ sub put {
 
 sub remove {
     my $self = shift;
-
-    my $columnFamily = shift;
-    my $key = shift;
-    my $column = shift;
-    my $opt = shift // {};
-
-    my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily});
-    my $timestamp = $opt->{timestamp} // time;
-
-    my $level = $self->_consistency_level_write($opt);
-
-    $self->client->remove($key, $columnPath, $timestamp, $level);
+    $self->delete(@_);
 }
 
 =head1 SEEALSO
