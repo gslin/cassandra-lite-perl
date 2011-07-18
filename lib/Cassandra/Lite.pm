@@ -268,6 +268,8 @@ sub put {
     my $key = shift;
     my $opt = shift // {};
 
+    my $level = $self->_consistency_level_write($opt);
+
     # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
@@ -278,8 +280,6 @@ sub put {
         $column->{value} = $v;
         $column->{timestamp} = $opt->{timestamp} // time;
     }
-
-    my $level = $self->_consistency_level_write($opt);
 
     $self->client->insert($key, $columnParent, $column, $level);
 }
