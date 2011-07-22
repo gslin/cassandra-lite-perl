@@ -50,7 +50,7 @@ You'll need to install Thrift perl modules first to use Cassandra::Lite.
 
     # Higher consistency level
     my $v2 = $c->get($columnFamily, $key, 'title', {consistency_level => 'QUORUM'}); # OR
-    my $v2 = $c->get($columnFamily, $key, 'title', {consistency_level => 'ALL'});
+    my $v3 = $c->get($columnFamily, $key, 'title', {consistency_level => 'ALL'});
 
     # Remove it ("remove" is an alias of "delete")
     $c->delete($columnFamily, $key, {timestamp => time}); # You can specify timestamp (optional) and consistency_level (optional)
