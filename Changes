@@ -1,3 +1,6 @@
+0.0.7   July 23, 2011
+        - Support get operations for multiple keys.
+
 0.0.6   July 18, 2011
         - Rename "insert" to "put" and setup alias to keep compatibility.
         - Rename "remove" to "delete" and setup alias to keep compatibility.
