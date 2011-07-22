@@ -1,9 +1,9 @@
-0.0.6   June 18, 2011
+0.0.6   July 18, 2011
         - Rename "insert" to "put" and setup alias to keep compatibility.
         - Rename "remove" to "delete" and setup alias to keep compatibility.
         - Fix multiple columns insert bug.
 
-0.0.5   June 17, 2011
+0.0.5   July 17, 2011
         - Support for count and reverse in get_slice and get_count
           functions. (thanks for jcbf, issue #4)
         - Fix typo in sample.
