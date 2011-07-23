@@ -331,7 +331,7 @@ sub remove {
 
 =head1 SEEALSO
 
-=over 4
+=over
 
 =item Cassandra API
 
