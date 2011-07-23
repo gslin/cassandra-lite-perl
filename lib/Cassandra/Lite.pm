@@ -329,7 +329,7 @@ sub remove {
     $self->delete(@_);
 }
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 =over
 
