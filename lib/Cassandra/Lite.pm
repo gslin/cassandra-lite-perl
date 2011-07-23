@@ -351,9 +351,8 @@ Gea-Suan Lin, C<< <gslin at gslin.org> >>
 
 Copyright 2011 Gea-Suan Lin.
 
-This software is released under 3-clause BSD license. See
-L<http://www.opensource.org/licenses/bsd-license.php> for more
-information.
+This software is released under 3-clause BSD license.
+See L<http://www.opensource.org/licenses/bsd-license.php> for more information.
 
 =cut
 
