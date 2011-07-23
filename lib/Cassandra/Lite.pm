@@ -314,15 +314,6 @@ sub get_slice {
 }
 
 =item
-C<insert>
-=cut
-
-sub insert {
-    my $self = shift;
-    $self->put(@_);
-}
-
-=item
 C<put>
 =cut
 
