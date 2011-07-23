@@ -174,6 +174,8 @@ All supported options:
                 password => 'xxx',              # optional, default to empty string ''
                 consistency_level_read => 'ONE' # optional, default to 'ONE'
                 consistency_level_write => 'ONE' # optional, default to 'ONE'
+                transport_read => 1024,         # optional, default to 1024
+                transport_write => 1024,        # optional, default to 1024
                 keyspace => 'Keyspace1',
             );
 
