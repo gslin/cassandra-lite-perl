@@ -84,6 +84,8 @@ has 'server_name' => (is => 'rw', isa => 'Str', default => '127.0.0.1');
 has 'server_port' => (is => 'rw', isa => 'Int', default => 9160);
 has 'socket' => (is => 'rw', isa => 'Thrift::Socket', lazy_build => 1);
 has 'transport' => (is => 'rw', isa => 'Thrift::FramedTransport', lazy_build => 1);
+has 'transport_read' => (is => 'rw', isa => 'Int', default => 1024);
+has 'transport_write' => (is => 'rw', isa => 'Int', default => 1024);
 has 'username' => (is => 'rw', isa => 'Str', default => '');
 
 use 5.010;
@@ -122,7 +124,7 @@ sub _build_socket {
 sub _build_transport {
     my $self = shift;
 
-    Thrift::FramedTransport->new($self->socket, 1024, 1024);
+    Thrift::FramedTransport->new($self->socket, $self->transport_read, $self->transport_write);
 }
 
 sub _consistency_level_read {
