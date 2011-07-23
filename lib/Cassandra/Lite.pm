@@ -18,18 +18,7 @@ You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
 
     use Cassandra::Lite;
 
-    # All supported options:
-    my $c = Cassandra::Lite->new(
-                server_name => 'server1',       # optional, default to '127.0.0.1'
-                server_port => 9160,            # optional, default to 9160
-                username => 'username',         # optional, default to empty string ''
-                password => 'xxx',              # optional, default to empty string ''
-                consistency_level_read => 'ONE' # optional, default to 'ONE'
-                consistency_level_write => 'ONE' # optional, default to 'ONE'
-                keyspace => 'Keyspace1',
-            );
-
-    # Usually we can use this in dev environment:
+    # Create with default options:
     my $c = Cassandra::Lite->new(keyspace => 'Keyspace1');
 
     # Now just define $columnFamily and $key
@@ -160,6 +149,26 @@ sub _trigger_keyspace {
 
     $self->client->set_keyspace($keyspace);
 }
+
+=item new
+
+All supported options:
+
+    my $c = Cassandra::Lite->new(
+                server_name => 'server1',       # optional, default to '127.0.0.1'
+                server_port => 9160,            # optional, default to 9160
+                username => 'username',         # optional, default to empty string ''
+                password => 'xxx',              # optional, default to empty string ''
+                consistency_level_read => 'ONE' # optional, default to 'ONE'
+                consistency_level_write => 'ONE' # optional, default to 'ONE'
+                keyspace => 'Keyspace1',
+            );
+
+So, usually we can use this in dev environment:
+
+    my $c = Cassandra::Lite->new(keyspace => 'Keyspace1');
+
+=cut
 
 =item delete
 =cut
