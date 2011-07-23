@@ -162,7 +162,7 @@ sub _trigger_keyspace {
     $self->client->set_keyspace($keyspace);
 }
 
-=head2 delete
+=item delete
 =cut
 
 sub delete {
@@ -181,7 +181,7 @@ sub delete {
     $self->client->remove($key, $columnPath, $timestamp, $level);
 }
 
-=head2 get
+=item get
 =cut
 
 sub get {
@@ -211,7 +211,7 @@ sub get {
     $self->client->get($key, $columnPath, $level);
 }
 
-=head2 get_count
+=item get_count
 =cut
 
 sub get_count {
@@ -252,7 +252,7 @@ sub get_count {
     $self->client->get_count($key, $columnParent, $predicate, $level);
 }
 
-=head2 get_slice
+=item get_slice
 =cut
 
 sub get_slice {
@@ -286,7 +286,7 @@ sub get_slice {
     $self->client->get_slice($key, $columnParent, $predicate, $level);
 }
 
-=head2 insert
+=item insert
 =cut
 
 sub insert {
@@ -294,7 +294,7 @@ sub insert {
     $self->put(@_);
 }
 
-=head2 put
+=item put
 =cut
 
 sub put {
@@ -321,7 +321,7 @@ sub put {
     }
 }
 
-=head2 remove
+=item remove
 =cut
 
 sub remove {
