@@ -72,8 +72,6 @@ You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
     my $num2 = $c->get_count('Foo', 'key1');
     my $num3 = $c->get_count('Foo', 'key2', {consistency_level => 'ALL'});
 
-    ...
-
 =cut
 
 use Any::Moose;
