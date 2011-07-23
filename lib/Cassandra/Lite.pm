@@ -160,7 +160,8 @@ sub _trigger_keyspace {
     $self->client->set_keyspace($keyspace);
 }
 
-=item new
+=item
+C<new>
 
 All supported options:
 
@@ -180,7 +181,8 @@ So, usually we can use this in dev environment:
 
 =cut
 
-=item delete
+=item
+C<delete>
 =cut
 
 sub delete {
@@ -199,7 +201,8 @@ sub delete {
     $self->client->remove($key, $columnPath, $timestamp, $level);
 }
 
-=item get
+=item
+C<get>
 =cut
 
 sub get {
@@ -229,7 +232,8 @@ sub get {
     $self->client->get($key, $columnPath, $level);
 }
 
-=item get_count
+=item
+C<get_count>
 =cut
 
 sub get_count {
@@ -270,7 +274,8 @@ sub get_count {
     $self->client->get_count($key, $columnParent, $predicate, $level);
 }
 
-=item get_slice
+=item
+C<get_slice>
 =cut
 
 sub get_slice {
@@ -304,7 +309,8 @@ sub get_slice {
     $self->client->get_slice($key, $columnParent, $predicate, $level);
 }
 
-=item insert
+=item
+C<insert>
 =cut
 
 sub insert {
@@ -312,7 +318,8 @@ sub insert {
     $self->put(@_);
 }
 
-=item put
+=item
+C<put>
 =cut
 
 sub put {
@@ -339,7 +346,8 @@ sub put {
     }
 }
 
-=item remove
+=item
+C<remove>
 =cut
 
 sub remove {
