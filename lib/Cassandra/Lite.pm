@@ -247,10 +247,9 @@ sub get_count {
     my $key = shift;
     my $opt = shift;
 
-    # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
-
     my $sliceRange = Cassandra::SliceRange->new($opt);
+
     if (defined $opt->{range}) {
         $sliceRange->{start} = $opt->{range}->[0] // '';
         $sliceRange->{finish} = $opt->{range}->[1] // '';
@@ -289,7 +288,6 @@ sub get_slice {
     my $key = shift;
     my $opt = shift;
 
-    # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
     my $sliceRange = Cassandra::SliceRange->new($opt);
@@ -326,10 +324,7 @@ sub put {
     my $opt = shift // {};
 
     my $level = $self->_consistency_level_write($opt);
-
-    # TODO: cache this
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
-
     my $column = Cassandra::Column->new;
 
     while (my ($k, $v) = each %$columns) {
