@@ -359,11 +359,15 @@ sub remove {
 
 =over
 
-=item Cassandra API
+=item *
+
+Cassandra API
 
 L<http://wiki.apache.org/cassandra/API>
 
-=item Cassandra Thrift Interface
+=item *
+
+Cassandra Thrift Interface
 
 L<http://wiki.apache.org/cassandra/ThriftInterface>
 
