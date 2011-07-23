@@ -16,18 +16,24 @@ You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
 
 =head1 SYNOPSIS
 
+First to initialize:
+
     use Cassandra::Lite;
 
-    # Create with default options:
+    # Create with default options (C<keyspace> is a mantorary option):
     my $c = Cassandra::Lite->new(keyspace => 'Keyspace1');
 
     # Now just define $columnFamily and $key
     my $columnFamily = 'BlogArticle';
     my $key = 'key12345';
 
+Then you can insert data:
+
     # Insert ("insert" is an alias of "put") it. (timestamp is optional)
     $c->put($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time}); # OR
     $c->insert($columnFamily, $key, {title => 'testing title', body => '...'});
+
+And get data:
 
     # Get slice
     my $res1 = $c->get_slice($columnFamily, $key);
@@ -50,9 +56,13 @@ You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
     my $v2 = $c->get($columnFamily, $key, 'title', {consistency_level => 'QUORUM'}); # OR
     my $v3 = $c->get($columnFamily, $key, 'title', {consistency_level => 'ALL'});
 
+More, to delete data:
+
     # Remove it ("remove" is an alias of "delete")
     $c->delete($columnFamily, $key, {timestamp => time}); # You can specify timestamp (optional) and consistency_level (optional)
     $c->remove($columnFamily, $key);
+
+Others:
 
     # Change keyspace
     $c->keyspace('BlogArticleComment');
