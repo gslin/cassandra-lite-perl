@@ -288,7 +288,7 @@ sub get_slice {
 
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
-    my $sliceRange = Cassandra::SliceRange->new($column);
+    my $sliceRange = Cassandra::SliceRange->new;
     if (defined $column->{range}) {
         $sliceRange->{start} = $column->{range}->[0] // '';
         $sliceRange->{finish} = $column->{range}->[1] // '';
