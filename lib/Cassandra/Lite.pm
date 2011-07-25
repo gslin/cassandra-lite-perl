@@ -199,23 +199,36 @@ sub get {
     my $column = shift;
     my $opt = shift // {};
 
-    my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily, column => $column});
+    # Simple get is a totally different case.  It doesn't use columnParent.
+    if ('SCALAR' eq ref \$key and 'SCALAR' eq ref \$column) {
+        my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily, column => $column});
+        my $level = $self->_consistency_level_read($opt);
+
+        return $self->client->get($key, $columnPath, $level);
+    }
+
+    my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
+
+    my $sliceRange;
+    if ('HASH' eq ref $column) {
+        $sliceRange = Cassandra::SliceRange->new($column);
+    } else {
+        $sliceRange = Cassandra::SliceRange->new;
+    }
+
+    my $predicate = Cassandra::SlicePredicate->new;
+    $predicate->{slice_range} = $sliceRange;
+
     my $level = $self->_consistency_level_read($opt);
 
     if ('ARRAY' eq ref $key) {
-        my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
-
-        my $sliceRange = Cassandra::SliceRange->new($opt);
-        $sliceRange->{start} = '';
-        $sliceRange->{finish} = '';
-
-        my $predicate = Cassandra::SlicePredicate->new;
-        $predicate->{slice_range} = $sliceRange;
-
         return $self->client->multiget_slice($key, $columnParent, $predicate, $level);
+    } elsif ('HASH' eq ref $key) {
+        my $range = Cassandra::KeyRange->new($key);
+        return $self->client->get_range_slices($columnParent, $predicate, $range, $level);
     }
 
-    $self->client->get($key, $columnPath, $level);
+    $self->client->get_slice($key, $columnParent, $predicate, $level);
 }
 
 =item
@@ -257,41 +270,6 @@ sub get_count {
     }
 
     $self->client->get_count($key, $columnParent, $predicate, $level);
-}
-
-=item
-C<get_slice>
-=cut
-
-sub get_slice {
-    my $self = shift;
-
-    my $columnFamily = shift;
-    my $key = shift;
-    my $column = shift;
-    my $opt = shift // {};
-
-    my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
-
-    my $sliceRange = Cassandra::SliceRange->new;
-    if (defined $column->{range}) {
-        $sliceRange->{start} = $column->{range}->[0] // '';
-        $sliceRange->{finish} = $column->{range}->[1] // '';
-    } else {
-        $sliceRange->{start} = '';
-        $sliceRange->{finish} = '';
-    }
-
-    my $predicate = Cassandra::SlicePredicate->new;
-    $predicate->{slice_range} = $sliceRange;
-
-    my $level = $self->_consistency_level_read($opt);
-
-    if ('ARRAY' eq ref $key) {
-        return $self->client->multiget_slice($key, $columnParent, $predicate, $level);
-    }
-
-    $self->client->get_slice($key, $columnParent, $predicate, $level);
 }
 
 =item
