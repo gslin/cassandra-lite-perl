@@ -34,26 +34,11 @@ Then you can insert data:
 
 And get data:
 
-    # Get slice
-    my $res1 = $c->get_slice($columnFamily, $key);
-    my $res2 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', undef]});
-    my $res3 = $c->get_slice($columnFamily, $key, {range => [undef, 'sliceKeyFinish']});
-    my $res4 = $c->get_slice($columnFamily, $key, {range => ['sliceKeyStart', 'sliceKeyFinish']});
-
     # Get a column
-    my $v1 = $c->get($columnFamily, $key, 'title');
+    my $scalarValue = $c->get($columnFamily, $key, 'title');
 
-    # Now we can search by multi-keys with same function
-    my $key2 = 'key56789';
-    my $res5 = $c->get($columnFamily, [$key, $key2], 'title');
-
-    # Same reason to get_slice and get_count
-    my $res6 = $c->get_slice($columnFamily, [$key, $key2], {range => ['sliceKeyStart', undef]});
-    my $num1 = $c->get_count($columnFamily, [$key, $key2]);
-
-    # Higher consistency level
-    my $v2 = $c->get($columnFamily, $key, 'title', {consistency_level => 'QUORUM'}); # OR
-    my $v3 = $c->get($columnFamily, $key, 'title', {consistency_level => 'ALL'});
+    # Get all columns
+    my $hashRef = $c->get($columnFamily, $key);
 
 More, to delete data:
 
