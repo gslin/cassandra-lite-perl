@@ -283,14 +283,15 @@ sub get_slice {
 
     my $columnFamily = shift;
     my $key = shift;
-    my $opt = shift;
+    my $column = shift;
+    my $opt = shift // {};
 
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
-    my $sliceRange = Cassandra::SliceRange->new($opt);
-    if (defined $opt->{range}) {
-        $sliceRange->{start} = $opt->{range}->[0] // '';
-        $sliceRange->{finish} = $opt->{range}->[1] // '';
+    my $sliceRange = Cassandra::SliceRange->new($column);
+    if (defined $column->{range}) {
+        $sliceRange->{start} = $column->{range}->[0] // '';
+        $sliceRange->{finish} = $column->{range}->[1] // '';
     } else {
         $sliceRange->{start} = '';
         $sliceRange->{finish} = '';
