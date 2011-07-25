@@ -57,9 +57,8 @@ And get data:
 
 More, to delete data:
 
-    # Remove it ("remove" is an alias of "delete")
+    # Remove it
     $c->delete($columnFamily, $key, {timestamp => time}); # You can specify timestamp (optional) and consistency_level (optional)
-    $c->remove($columnFamily, $key);
 
 Others:
 
