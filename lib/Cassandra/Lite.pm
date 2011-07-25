@@ -29,8 +29,8 @@ First to initialize:
 
 Then you can insert data:
 
-    # Insert it. (C<timestamp> is optional)
-    $c->put($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time});
+    # Insert it.
+    $c->put($columnFamily, $key, {title => 'testing title', body => '...'});
 
 And get data:
 
@@ -58,7 +58,7 @@ And get data:
 More, to delete data:
 
     # Remove it
-    $c->delete($columnFamily, $key, {timestamp => time}); # You can specify timestamp (optional) and consistency_level (optional)
+    $c->delete($columnFamily, $key);
 
 Others:
 
