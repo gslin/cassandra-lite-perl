@@ -1,5 +1,6 @@
-0.0.8   July 24, 2011
+0.0.8   July 25, 2011
         - INCOMPATIBLE: Remove insert(), use put() instead.
+        - INCOMPATIBLE: Remove remove(), use delete() instead.
         - Support custom Thrift transport read/write.
 
 0.0.7   July 23, 2011

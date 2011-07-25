@@ -335,15 +335,6 @@ sub put {
     }
 }
 
-=item
-C<remove>
-=cut
-
-sub remove {
-    my $self = shift;
-    $self->delete(@_);
-}
-
 =head1 SEE ALSO
 
 =over
