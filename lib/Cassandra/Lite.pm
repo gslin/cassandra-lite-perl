@@ -29,9 +29,8 @@ First to initialize:
 
 Then you can insert data:
 
-    # Insert ("insert" is an alias of "put") it. (timestamp is optional)
-    $c->put($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time}); # OR
-    $c->insert($columnFamily, $key, {title => 'testing title', body => '...'});
+    # Insert it. (C<timestamp> is optional)
+    $c->put($columnFamily, $key, {title => 'testing title', body => '...'}, {timestamp => time});
 
 And get data:
 
