@@ -275,31 +275,18 @@ sub get_count {
 
     my $columnFamily = shift;
     my $key = shift;
+    my $column = shift;
     my $opt = shift;
 
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
-    my $sliceRange = Cassandra::SliceRange->new($opt);
-
-    if (defined $opt->{range}) {
-        $sliceRange->{start} = $opt->{range}->[0] // '';
-        $sliceRange->{finish} = $opt->{range}->[1] // '';
-    } else {
-        $sliceRange->{start} = '';
-        $sliceRange->{finish} = '';
-    }
-
-    my $predicate = Cassandra::SlicePredicate->new;
-    $predicate->{slice_range} = $sliceRange;
+    my $sliceRange = Cassandra::SliceRange->new($column);
+    my $predicate = Cassandra::SlicePredicate->new({slice_range => $sliceRange});
 
     my $level = $self->_consistency_level_read($opt);
 
     if ('ARRAY' eq ref $key) {
-        my $sliceRange = Cassandra::SliceRange->new($opt);
-        $sliceRange->{start} = '';
-        $sliceRange->{finish} = '';
-
-        my $predicate = Cassandra::SlicePredicate->new;
-        $predicate->{slice_range} = $sliceRange;
+        my $sliceRange = Cassandra::SliceRange->new($column);
+        my $predicate = Cassandra::SlicePredicate->new({slice_range => $sliceRange});
 
         return $self->client->multiget_count($key, $columnParent, $predicate, $level);
     }

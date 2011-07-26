@@ -1,3 +1,6 @@
+0.2.0   July 26, 2011
+        - INCOMPATIBLE: Change get_count() arguments.
+
 0.1.0   July 26, 2011
         - INCOMPATIBLE: Remove insert(), use put() instead.
         - INCOMPATIBLE: Remove remove(), use delete() instead.
