@@ -145,7 +145,7 @@ sub _trigger_keyspace {
 }
 
 =item
-C<new>
+C<new(...)>
 
 All supported options:
 
@@ -168,7 +168,7 @@ So, usually we can use this in dev environment:
 =cut
 
 =item
-C<delete>
+C<delete($columnFamily, $key, $column, $options)>
 =cut
 
 sub delete {
@@ -267,7 +267,7 @@ sub get {
 }
 
 =item
-C<get_count>
+C<get_count($columnFamily, $key, $column, $options)>
 =cut
 
 sub get_count {
@@ -295,7 +295,7 @@ sub get_count {
 }
 
 =item
-C<put>
+C<put($columnFamily, $key, $columns, $options)>
 =cut
 
 sub put {
