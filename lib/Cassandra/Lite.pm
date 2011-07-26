@@ -12,6 +12,9 @@ Cassandra::Lite - Simple way to access Cassandra 0.7/0.8
 This module will offer you a simple way to access Cassandra 0.7/0.8 (maybe later version).
 Some parts are not same as standard API document (especially arguments order), it's because I want to keep this module easy to use.
 
+Before using this module, you need to know about the basic model of Cassandra.
+L<http://wiki.apache.org/cassandra/DataModel> is a good start.
+
 You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
 
 B<WARNING: All API might be changed.>
