@@ -14,6 +14,8 @@ Some parts are not same as standard API document (especially arguments order), i
 
 You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
 
+B<WARNING: All API might be changed.>
+
 =head1 SYNOPSIS
 
 First to initialize:
