@@ -188,7 +188,30 @@ sub delete {
 }
 
 =item
-C<get>
+C<get($columnFamily, $key, $column, $options)>
+
+The simplest syntax is to get all columns:
+
+    my $cf = 'BlogArticle';
+    my $key1 = 'key12345';
+
+    my $allColumns = $c->get($cf, $key1);
+
+You can get a single column:
+
+    my $title = $c->get($cf, $key1, 'title');
+
+Also, you can get range column (this example will query from 'Column001' to 'Column999'):
+
+    my $columns = $c->get($cf, $key1, {start => 'Column001', finish => 'Column999'});
+
+With multiple keys:
+
+    my $key2 = 'key56789';
+
+    my $datas1 = $c->get($cf, [$key1, $key2]);
+    my $datas2 = $c->get($cf, [$key1, $key2], {start_key => 'Column001', end_key => 'Column999'});
+
 =cut
 
 sub get {
