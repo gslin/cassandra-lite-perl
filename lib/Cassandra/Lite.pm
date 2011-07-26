@@ -236,10 +236,14 @@ sub get {
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
 
     my $sliceRange;
-    if ('HASH' eq ref $column) {
+    if (!defined $column) {
+        $sliceRange = Cassandra::SliceRange->new({start => '', finish => ''});
+    } elsif ('HASH' eq ref $column) {
         $sliceRange = Cassandra::SliceRange->new($column);
+    } elsif ('SCALAR' eq ref \$column) {
+        $sliceRange = Cassandra::SliceRange->new({start => $column, finish => $column});
     } else {
-        $sliceRange = Cassandra::SliceRange->new;
+        die 'Not supported column type';
     }
 
     my $predicate = Cassandra::SlicePredicate->new;
