@@ -210,7 +210,14 @@ With multiple keys:
     my $key2 = 'key56789';
 
     my $datas1 = $c->get($cf, [$key1, $key2]);
-    my $datas2 = $c->get($cf, [$key1, $key2], {start_key => 'Column001', end_key => 'Column999'});
+    my $datas2 = $c->get($cf, [$key1, $key2], {start => 'Column001', finish => 'Column999'});
+
+With key range:
+
+    my $datas3 = $c->get($cf, {start_key => 'a', end_key => 'b'});
+    my $datas4 = $c->get($cf, {start_key => 'a', end_key => 'b'}, 'column');
+    my $datas5 = $c->get($cf, {start_key => 'a', end_key => 'b'},
+                         {start => 'Column001', finish => 'Column999'});
 
 In order words, C<$key> can be scalar string (single key) or array reference (multiple keys).
 And C<$column> can be undef (to get all columns), scalar string (to get one column), or hash reference (to get columns by range).
