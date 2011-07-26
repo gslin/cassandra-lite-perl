@@ -226,7 +226,7 @@ sub get {
     my $opt = shift // {};
 
     # Simple get is a totally different case.  It doesn't use columnParent.
-    if ('SCALAR' eq ref \$key and 'SCALAR' eq ref \$column) {
+    if ('SCALAR' eq ref \$key and defined $column and 'SCALAR' eq ref \$column) {
         my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily, column => $column});
         my $level = $self->_consistency_level_read($opt);
 
