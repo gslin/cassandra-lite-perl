@@ -249,8 +249,6 @@ sub get {
         $sliceRange = Cassandra::SliceRange->new($column);
     } elsif ('SCALAR' eq ref \$column) {
         $sliceRange = Cassandra::SliceRange->new({start => $column, finish => $column});
-    } else {
-        die 'Not supported column type';
     }
 
     my $predicate = Cassandra::SlicePredicate->new;
