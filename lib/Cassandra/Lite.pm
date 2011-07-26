@@ -212,6 +212,9 @@ With multiple keys:
     my $datas1 = $c->get($cf, [$key1, $key2]);
     my $datas2 = $c->get($cf, [$key1, $key2], {start_key => 'Column001', end_key => 'Column999'});
 
+In order words, C<$key> can be scalar string (single key) or array reference (multiple keys).
+And C<$column> can be undef (to get all columns), scalar string (to get one column), or hash reference (to get columns by range).
+
 =cut
 
 sub get {
