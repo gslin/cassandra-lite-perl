@@ -17,7 +17,7 @@ L<http://wiki.apache.org/cassandra/DataModel> is a good start.
 
 You'll need to install L<Thrift> perl modules first to use Cassandra::Lite.
 
-B<WARNING: All API might be changed.>
+B<WARNING: All API might be changed during development version.>
 
 =head1 SYNOPSIS
 
