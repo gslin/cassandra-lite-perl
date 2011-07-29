@@ -1,3 +1,6 @@
+0.3.0   July 29, 2011
+        - INCOMPATIBLE: The return value of get() is much simpler now.
+
 0.2.1   July 27, 2011
         - Add development warning.
 
