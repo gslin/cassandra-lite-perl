@@ -242,7 +242,7 @@ sub get {
         my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily, column => $column});
         my $level = $self->_consistency_level_read($opt);
 
-        return $self->client->get($key, $columnPath, $level);
+        return $self->client->get($key, $columnPath, $level)->column->value;
     }
 
     my $columnParent = Cassandra::ColumnParent->new({column_family => $columnFamily});
