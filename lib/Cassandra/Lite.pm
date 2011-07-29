@@ -176,6 +176,18 @@ So, usually we can use this in dev environment:
 =cut
 
 =item
+C<cql($query)>
+=cut
+
+sub cql {
+    my $self = shift;
+
+    my $query = shift;
+
+    $self->client->execute_cql_query($query, Cassandra::Compression::NONE);
+}
+
+=item
 C<delete($columnFamily, $key, $options)>
 
 Delete entire row.
