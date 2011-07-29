@@ -58,6 +58,9 @@ Others:
     # Get count
     my $num2 = $c->get_count('Foo', 'key1');
 
+    # Truncate column family
+    $c->truncate('Foo');
+
 =cut
 
 use Any::Moose;
