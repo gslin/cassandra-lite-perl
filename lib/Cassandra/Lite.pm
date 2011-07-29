@@ -317,6 +317,8 @@ sub get {
 
 =item
 C<get_count($columnFamily, $key, $column, $options)>
+
+Get column number of C<$key> in C<$columnFamily> (with C<$column> filter).
 =cut
 
 sub get_count {
@@ -345,6 +347,8 @@ sub get_count {
 
 =item
 C<put($columnFamily, $key, $columns, $options)>
+
+Insert an entry into C<$columnFamily>.
 =cut
 
 sub put {
