@@ -173,7 +173,9 @@ So, usually we can use this in dev environment:
 =cut
 
 =item
-C<delete($columnFamily, $key, $column, $options)>
+C<delete($columnFamily, $key, $options)>
+
+Delete entire row.
 =cut
 
 sub delete {
@@ -181,7 +183,6 @@ sub delete {
 
     my $columnFamily = shift;
     my $key = shift;
-    my $column = shift;
     my $opt = shift // {};
 
     my $columnPath = Cassandra::ColumnPath->new({column_family => $columnFamily});
