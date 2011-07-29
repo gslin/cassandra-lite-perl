@@ -284,8 +284,14 @@ sub get {
     if ('ARRAY' eq ref $key) {
         my $ret = $self->client->multiget_slice($key, $columnParent, $predicate, $level);
 
-        while (my ($k, $columns) = each %$ret) {
-            $ret->{$k} = {map {$_->column->name => $_->column->value} @$columns};
+        if (defined $column and 'SCALAR' eq ref \$column) {
+            while (my ($k, $columns) = each %$ret) {
+                $ret->{$k} = $columns->[0]->column->value;
+            }
+        } else {
+            while (my ($k, $columns) = each %$ret) {
+                $ret->{$k} = {map {$_->column->name => $_->column->value} @$columns};
+            }
         }
 
         return $ret;
@@ -294,8 +300,15 @@ sub get {
         my $ret = $self->client->get_range_slices($columnParent, $predicate, $range, $level);
 
         my $ret2 = {};
-        foreach my $row (@$ret) {
-            $ret2->{$row->key} = {map {$_->column->name => $_->column->value} @{$row->columns}};
+
+        if (defined $column and 'SCALAR' eq ref \$column) {
+            foreach my $row (@$ret) {
+                $ret2->{$row->key} = $row->columns->[0]->column->value;
+            }
+        } else {
+            foreach my $row (@$ret) {
+                $ret2->{$row->key} = {map {$_->column->name => $_->column->value} @{$row->columns}};
+            }
         }
 
         return $ret2;
