@@ -340,6 +340,20 @@ sub put {
     }
 }
 
+=item
+C<truncate($columnFamily)>
+
+Truncate entire column family.
+=cut
+
+sub truncate {
+    my $self = shift;
+
+    my $columnFamily = shift;
+
+    $self->client->truncate($columnFamily);
+}
+
 =head1 SEE ALSO
 
 =over
