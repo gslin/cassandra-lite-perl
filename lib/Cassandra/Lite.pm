@@ -262,7 +262,7 @@ sub get {
     my $level = $self->_consistency_level_read($opt);
 
     if ('SCALAR' eq ref \$key) {
-        return $self->client->get_slice($key, $columnParent, $predicate, $level);
+        return {map {$_->column->name => $_->column->value} @{$self->client->get_slice($key, $columnParent, $predicate, $level)}};
     }
 
     if ('ARRAY' eq ref $key) {
