@@ -14,7 +14,7 @@ eval {
 
 plan skip_all => 'You need to run Cassandra first' if $@;
 
-my $ks = "PerlTestingKeyspace_$$";
+my $ks = "TestKeyspace_$$";
 eval {
     $c->client->system_drop_keyspace($ks);
 };
