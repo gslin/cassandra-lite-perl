@@ -261,14 +261,16 @@ sub get {
 
     my $level = $self->_consistency_level_read($opt);
 
+    if ('SCALAR' eq ref \$key) {
+        return $self->client->get_slice($key, $columnParent, $predicate, $level);
+    }
+
     if ('ARRAY' eq ref $key) {
         return $self->client->multiget_slice($key, $columnParent, $predicate, $level);
     } elsif ('HASH' eq ref $key) {
         my $range = Cassandra::KeyRange->new($key);
         return $self->client->get_range_slices($columnParent, $predicate, $range, $level);
     }
-
-    $self->client->get_slice($key, $columnParent, $predicate, $level);
 }
 
 =item
