@@ -19,7 +19,7 @@ eval {
     $c->client->system_drop_keyspace($ks);
 };
 
-my $cfObj = Cassandra::CfDef->new({keyspace => $ks, name => 'Standard', comparator_type => 'UTF8Type', default_validation_class => 'UTF8Type'});
+my $cfObj = Cassandra::CfDef->new({keyspace => $ks, name => 'Std', comparator_type => 'UTF8Type', default_validation_class => 'UTF8Type'});
 
 my $ksObj = Cassandra::KsDef->new({name => $ks, strategy_class => 'NetworkTopologyStrategy', cf_defs => [$cfObj]});
 $c->client->system_add_keyspace($ksObj);
