@@ -1,3 +1,11 @@
+0.4.0   July 29, 2011
+        - INCOMPATIBLE: The arguments of delete() is changed.  $column is not
+          needed.
+        - INCOMPATIBLE: The return value of get() is changed.  If $column is
+          scalar, then just return a simple hash.
+        - Support cql().
+        - Support truncate().
+
 0.3.0   July 29, 2011
         - INCOMPATIBLE: The return value of get() is much simpler now.
 
