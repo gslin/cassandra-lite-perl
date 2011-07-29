@@ -265,15 +265,25 @@ sub get {
         return {map {$_->column->name => $_->column->value} @{$self->client->get_slice($key, $columnParent, $predicate, $level)}};
     }
 
-    my $ret;
     if ('ARRAY' eq ref $key) {
-        $ret = $self->client->multiget_slice($key, $columnParent, $predicate, $level);
+        my $ret = $self->client->multiget_slice($key, $columnParent, $predicate, $level);
+
+        while (my ($k, $columns) = each %$ret) {
+            $ret->{$k} = {map {$_->column->name => $_->column->value} @$columns};
+        }
+
+        return $ret;
     } elsif ('HASH' eq ref $key) {
         my $range = Cassandra::KeyRange->new($key);
-        $ret = $self->client->get_range_slices($columnParent, $predicate, $range, $level);
-    }
+        my $ret = $self->client->get_range_slices($columnParent, $predicate, $range, $level);
 
-    $ret;
+        my $ret2 = {};
+        foreach my $row (@$ret) {
+            $ret2->{$row->key} = {map {$_->column->name => $_->column->value} @{$row->columns}};
+        }
+
+        return $ret2;
+    }
 }
 
 =item
