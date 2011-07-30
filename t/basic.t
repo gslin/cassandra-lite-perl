@@ -26,6 +26,8 @@ my $ksObj = Cassandra::KsDef->new({name => $ks, strategy_class => 'NetworkTopolo
 $c->client->system_add_keyspace($ksObj);
 $c->keyspace($ks);
 
+plan skip_all => 'Done';
+
 END {
     if (defined $c and defined $c->client) {
         $c->client->system_drop_keyspace($ks);
